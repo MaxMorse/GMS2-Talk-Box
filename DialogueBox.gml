@@ -1,4 +1,4 @@
-eenum DialogueBoxState {
+enum DialogueBoxState {
 	Resting,
 	Flipping,
 	Filling,
