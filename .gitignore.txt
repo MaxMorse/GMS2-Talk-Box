@@ -1,3 +1,4 @@
 datafiles/
 options/
 *.ypp
+*.yy
