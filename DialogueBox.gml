@@ -1,4 +1,4 @@
-enum DialogueBoxState {
+eenum DialogueBoxState {
 	Resting,
 	Flipping,
 	Filling,
@@ -7,21 +7,25 @@ enum DialogueBoxState {
 	Closed
 }
 
-function DialogueBox(x, y, w, h, text) constructor {
+function DialogueBox(x, y, w, h, font, color, sprite, text) constructor {
 
 	self.x = x;
 	self.y = y;
 	self.w = w;
 	self.h = h;
+	self.font = font;
+	self.col = color;
+	self.spr = sprite;
 	self.text = text;
+	
 	_state = DialogueBoxState.Opening;
 	textLineBreaks = "";
 	margin = new Rect(50,50,50,50);
 	offsetY = 0;
 	_previousOffsetY = 0;
 	_nextOffsetY = 0;
-	draw_set_font(Font1);
-	rowHeight = string_height(text);
+	
+	
 	pageFlipDuration = .25;
 	_pageFlipElapsed = 0;
 	_openDuration = 1;
@@ -35,6 +39,8 @@ function DialogueBox(x, y, w, h, text) constructor {
 							y - h * 0.5 + margin.top,
 							x + w * 0.5 - margin.right,
 							y + h * 0.5 - margin.bottom);
+	draw_set_font(font);
+	rowHeight = string_height(text);
 	numRows = textRect.Height() / rowHeight;
 	pageCount = 0;
 	if (textRect.Height() % rowHeight != 0) numRows -= 1;
@@ -57,6 +63,7 @@ function DialogueBox(x, y, w, h, text) constructor {
 		}
 	}
 	#endregion
+	draw_set_font(-1);
 	displayedPage = 0;
 	isPageFilled = [];
 	var rowCount = string_count("\n", textLineBreaks);
@@ -68,7 +75,7 @@ function DialogueBox(x, y, w, h, text) constructor {
 
 	Draw = function()
 	{
-		draw_sprite_stretched(sBox,0,x,y,currentWidth,currentHeight);
+		draw_sprite_stretched(spr,0,x,y,currentWidth,currentHeight);
 		if (_state != DialogueBoxState.Opening && _state != DialogueBoxState.Closing && _state != DialogueBoxState.Closed) DisplayCurrentRows();		
 	}
 	
@@ -172,15 +179,21 @@ function DialogueBox(x, y, w, h, text) constructor {
 	
 	DisplayCurrentRows = function()
 	{
+		
+		
 		shader_set(DialogueBoxMask);
 		var u_bounds = shader_get_uniform(DialogueBoxMask, "u_bounds");
 		shader_set_uniform_f(u_bounds, textRect.left, textRect.top, textRect.right, textRect.bottom);
+		draw_set_font(font);
+		draw_text_color(textRect.left, textRect.top + offsetY, textLineBreaks, col, col, col, col, 1); 
+		draw_set_font(-1);
 		
-		draw_text(textRect.left, textRect.top + offsetY, textLineBreaks) 
 		shader_reset();
+		
 	}
 
 }
+
 function LerpStruct(start, finish, duration) constructor
 {
 	_start = start;
